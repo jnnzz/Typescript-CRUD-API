@@ -4,7 +4,6 @@
     // File Layout
     "rootDir": "./src",
     "outDir": "./dist",
-
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
     "module": "commonjs",
@@ -12,31 +11,21 @@
     "types": [],
     "esModuleInterop": true,
     // For nodejs:
-    "lib": ["ES2020"],
+    "lib": [
+      "ES2020"
+    ],
     // "types": ["node"],
     // and npm install -D @types/node
-
     // Other Outputs
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
-
     // Stricter Typechecking Options
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
-
-    // Style Options
-    // "noImplicitReturns": true,
-    // "noImplicitOverride": true,
-    // "noUnusedLocals": true,
-    // "noUnusedParameters": true,
-    // "noFallthroughCasesInSwitch": true,
-    // "noPropertyAccessFromIndexSignature": true,
-
-    // Recommended Options
     "strict": true,
     "jsx": "react-jsx",
-    "verbatimModuleSyntax": true,
+    "verbatimModuleSyntax": false,
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
@@ -45,12 +34,22 @@
     "baseUrl": "./src",
     "skipLibCheck": true,
     "paths": {
-      "_helpers/*": ["_helpers/*"],
-      "_middleware/*": ["_middleware/*"],
-      "users": ["users/*"]
-      
+      "_helpers/*": [
+        "_helpers/*"
+      ],
+      "_middleware/*": [
+        "_middleware/*"
+      ],
+      "users": [
+        "users/*"
+      ]
     }
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }
