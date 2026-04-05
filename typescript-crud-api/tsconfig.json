@@ -10,6 +10,7 @@
     "target": "ES2020",
     "types": [],
     "esModuleInterop": true,
+    "ignoreDeprecations": "6.0",
     // For nodejs:
     "lib": [
       "ES2020"

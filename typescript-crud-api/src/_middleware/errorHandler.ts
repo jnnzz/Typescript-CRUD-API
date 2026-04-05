@@ -6,6 +6,9 @@ export function errorHandler(
   res: Response,
   next: NextFunction
 ) : Response | void {
+  // Log the error for debugging
+  console.error('Error occurred:', err);
+  
   if (typeof err === 'string') {
     const is404 = err.toLowerCase().endsWith('not found');
     const statusCode = is404 ? 404 : 400;

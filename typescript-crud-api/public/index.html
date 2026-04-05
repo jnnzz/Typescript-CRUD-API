@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Full-Stack App (TypeScript Backend)</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="not-authenticated">
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
+  <!-- ============ NAVBAR ============ -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand" href="#/">Full-Stack App</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto">
+          <!-- Logged Out: Login & Register links -->
+          <li class="nav-item role-logged-out">
+            <a class="nav-link" href="#/login">Login</a>
+          </li>
+          <li class="nav-item role-logged-out">
+            <a class="nav-link" href="#/register">Register</a>
+          </li>
+          <!-- Logged In: single dropdown with all links -->
+          <li class="nav-item dropdown role-logged-in">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+              <span id="nav-username">User</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="#/profile">Profile</a></li>
+              <!-- Admin-only items inside dropdown -->
+              <li class="role-admin"><a class="dropdown-item" href="#/employees">Employees</a></li>
+              <li class="role-admin"><a class="dropdown-item" href="#/accounts">Accounts</a></li>
+              <li class="role-admin"><a class="dropdown-item" href="#/departments">Departments</a></li>
+              <li><a class="dropdown-item" href="#/requests">My Requests</a></li>
+              <li><hr class="dropdown-divider" /></li>
+              <li><a class="dropdown-item logout-item" id="logout-btn" href="#">Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ============ MAIN ============ -->
+  <main class="container">
+
+    <!-- HOME PAGE -->
+    <section id="home-page" class="page">
+      <div class="home-content mt-2">
+        <h1>Welcome to Full-Stack App</h1>
+        <p>A full-stack application with TypeScript backend and MySQL database:</p>
+        <ul>
+          <li>User registration with secure password hashing</li>
+          <li>Login with JWT authentication</li>
+          <li>Role-based UI (Admin/User)</li>
+          <li>CRUD for Employees, Departments, Requests</li>
+        </ul>
+        <div class="home-note">
+          <span>ℹ️</span>
+          <span><strong>Note:</strong> Connected to TypeScript backend on port 4000 with MySQL database</span>
+        </div>
+        <a href="#/register" class="btn btn-blue">Get Started →</a>
+      </div>
+    </section>
+
+    <!-- REGISTER PAGE -->
+    <section id="register-page" class="page">
+      <div class="auth-wrapper">
+        <div class="auth-card">
+          <h2 class="auth-title">Register Account</h2>
+          <form id="register-form" novalidate>
+            <div class="mb-3">
+              <label class="form-label">First Name</label>
+              <input type="text" id="reg-fname" class="form-control" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Last Name</label>
+              <input type="text" id="reg-lname" class="form-control" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Email</label>
+              <input type="email" id="reg-email" class="form-control" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Password</label>
+              <input type="password" id="reg-password" class="form-control" minlength="6" />
+            </div>
+            <div id="reg-error" class="alert-msg d-none mb-3"></div>
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn-primary-custom">Sign Up</button>
+              <a href="#/" class="btn-outline-custom">Cancel</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- LOGIN PAGE -->
+    <section id="login-page" class="page">
+      <div class="auth-wrapper">
+        <div class="auth-card">
+          <h2 class="auth-title">Login</h2>
+          <form id="login-form" novalidate>
+            <div class="mb-3">
+              <label class="form-label">Email</label>
+              <input type="email" id="login-email" class="form-control" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Password</label>
+              <input type="password" id="login-password" class="form-control" />
+            </div>
+            <div id="login-error" class="alert-msg d-none mb-3"></div>
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn-blue">Login</button>
+              <a href="#/" class="btn-outline-custom">Cancel</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROFILE PAGE -->
+    <section id="profile-page" class="page">
+      <div class="page-header">
+        <h2>My Profile</h2>
+      </div>
+      <div id="profile-content" class="profile-card">
+        <!-- rendered by renderProfile() -->
+      </div>
+    </section>
+
+    <!-- EMPLOYEES PAGE (admin) -->
+    <section id="employees-page" class="page">
+      <div class="page-header d-flex justify-content-between align-items-center">
+        <h2>Employees</h2>
+        <button class="btn-primary-custom btn-sm" id="open-add-employee-btn">+ Add Employee</button>
+      </div>
+
+      <div class="table-wrapper mb-3">
+        <table class="table-custom">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Position</th>
+              <th>Dept</th>
+              <th>Hire Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="employees-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- Add/Edit Employee Form -->
+      <div id="employee-form-panel" class="form-panel d-none">
+        <h5 id="employee-form-title">Add/Edit Employee</h5>
+        <form id="employee-form" novalidate>
+          <input type="hidden" id="emp-edit-index" value="" />
+          <div class="mb-3">
+            <label class="form-label">Employee ID</label>
+            <input type="text" id="emp-id" class="form-control" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">User Email</label>
+            <input type="email" id="emp-email" class="form-control" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Position</label>
+            <input type="text" id="emp-position" class="form-control" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Department</label>
+            <select id="emp-dept" class="form-select"></select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Hire Date</label>
+            <input type="date" id="emp-hire-date" class="form-control" />
+          </div>
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn-primary-custom">Save</button>
+            <button type="button" id="cancel-employee-btn" class="btn-outline-custom">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- DEPARTMENTS PAGE (admin) -->
+    <section id="departments-page" class="page">
+      <div class="page-header d-flex justify-content-between align-items-center">
+        <h2>Departments</h2>
+        <button class="btn-primary-custom btn-sm" id="open-add-dept-btn">+ Add Department</button>
+      </div>
+
+      <div class="table-wrapper mb-3">
+        <table class="table-custom">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="departments-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- Add Dept Form -->
+      <div id="dept-form-panel" class="form-panel d-none">
+        <h5>Add Department</h5>
+        <form id="dept-form" novalidate>
+          <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" id="dept-name" class="form-control" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Description</label>
+            <input type="text" id="dept-desc" class="form-control" />
+          </div>
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn-primary-custom">Save</button>
+            <button type="button" id="cancel-dept-btn" class="btn-outline-custom">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ACCOUNTS PAGE (admin) -->
+    <section id="accounts-page" class="page">
+      <div class="page-header d-flex justify-content-between align-items-center">
+        <h2>Accounts</h2>
+        <button class="btn-primary-custom btn-sm" id="open-add-account-btn">+ Add Account</button>
+      </div>
+
+      <div class="table-wrapper mb-3">
+        <table class="table-custom">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="accounts-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- Add/Edit Account Form -->
+      <div id="account-form-panel" class="form-panel d-none">
+        <h5 id="account-form-title">Add/Edit Account</h5>
+        <form id="account-form" novalidate>
+          <input type="hidden" id="acc-edit-id" value="" />
+          <div class="mb-3">
+            <label class="form-label">First Name</label>
+            <input type="text" id="acc-fname" class="form-control" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Last Name</label>
+            <input type="text" id="acc-lname" class="form-control" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" id="acc-email" class="form-control" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input type="password" id="acc-password" class="form-control" minlength="6" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Role</label>
+            <select id="acc-role" class="form-select">
+              <option value="User">User</option>
+              <option value="Admin">Admin</option>
+            </select>
+          </div>
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn-primary-custom">Save</button>
+            <button type="button" id="cancel-account-btn" class="btn-outline-custom">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- REQUESTS PAGE -->
+    <section id="requests-page" class="page">
+      <div class="page-header d-flex justify-content-between align-items-center">
+        <h2>My Requests</h2>
+        <button class="btn-primary-custom btn-sm" id="open-request-btn">+ New Request</button>
+      </div>
+
+      <!-- Empty state shown dynamically -->
+      <div id="requests-empty" class="d-none" style="font-size:0.9rem;color:#6c757d;margin-bottom:1rem;">
+        You have no requests yet.
+        <button class="btn-primary-custom btn-sm ms-2" onclick="document.getElementById('open-request-btn').click()">Create One</button>
+      </div>
+
+      <div class="table-wrapper">
+        <table class="table-custom">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Type</th>
+              <th>Items</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="requests-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- New Request Modal -->
+      <div id="request-modal-overlay" class="modal-overlay d-none">
+        <div class="modal-panel">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5>New Request</h5>
+            <button id="close-request-modal" class="btn-close-custom">×</button>
+          </div>
+          <form id="request-form" novalidate>
+            <div class="mb-3">
+              <label class="form-label">Type</label>
+              <select id="req-type" class="form-select">
+                <option value="Equipment">Equipment</option>
+                <option value="Leave">Leave</option>
+                <option value="Resources">Resources</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Items</label>
+              <div id="req-items-container"></div>
+              <button type="button" id="add-item-btn" class="btn-outline-custom btn-sm mt-2">+</button>
+            </div>
+            <div id="req-error" class="alert-msg d-none mb-2"></div>
+            <button type="submit" class="btn-blue w-100">Submit Request</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="app-footer">
+    <div class="container">Full-Stack Prototype &copy; 2025</div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/script.js"></script>
+</body>
+</html>
